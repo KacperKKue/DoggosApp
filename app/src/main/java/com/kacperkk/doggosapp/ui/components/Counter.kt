@@ -15,7 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -36,10 +40,21 @@ fun Counter(dogs: List<Dog>) {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
+                modifier = Modifier
+                    .size(18.dp)
+                    .graphicsLayer(alpha = 0.99f)
+                    .drawWithCache {
+                        onDrawWithContent {
+                            drawContent()
+                            val brushGradient = Brush.linearGradient(
+                                colors = listOf(Color(101, 85, 143), Color(238, 184, 224))
+                            )
+                            drawRect(brushGradient, blendMode = BlendMode.SrcAtop)
+                        }
+                    },
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "Favorite",
-                tint = Color(238, 184, 224),
-                modifier = Modifier.size(18.dp)
+                tint = Color(238, 184, 224)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(

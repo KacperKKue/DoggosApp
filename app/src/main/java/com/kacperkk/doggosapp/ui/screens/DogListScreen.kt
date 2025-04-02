@@ -29,6 +29,7 @@ import com.kacperkk.doggosapp.model.Dog
 import com.kacperkk.doggosapp.ui.components.DogItem
 import com.kacperkk.doggosapp.ui.components.SearchBar
 import android.util.Log
+import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -41,25 +42,21 @@ fun DogListScreen(navController: NavController) {
     var dogs by rememberSaveable {
         mutableStateOf(
             listOf(
-                Dog(id = 1, name = "Pan Pumpernikiel", breed = "Jack Russel"),
-                Dog(id = 2, name = "Pan Pumpernikiel", breed = "Jack Russel"),
-                Dog(id = 3, name = "Pan Pumpernikiel", breed = "Jack Russel"),
-                Dog(id = 4, name = "Pan Pumpernikiel", breed = "Jack Russel"),
-                Dog(id = 5, name = "Pan Pumpernikiel", breed = "Jack Russel", isFavorite = true),
-                Dog(id = 6, name = "Pan Pumpernikiel", breed = "Jack Russel", isFavorite = true),
-                Dog(id = 7, name = "Pan Pumpernikiel", breed = "Jack Russel", isFavorite = true),
-                Dog(id = 8, name = "Pan Pumpernikiel", breed = "Jack Russel", isFavorite = true),
-                Dog(id = 9, name = "Pan Pumpernikiel", breed = "Jack Russel", isFavorite = true),
-                Dog(id = 10, name = "Pan Pumpernikiel", breed = "Jack Russel", isFavorite = true),
-                Dog(id = 11, name = "Pan Pumpernikiel", breed = "Jack Russel"),
-                Dog(id = 12, name = "Pan Pumpernikiel", breed = "Jack Russel"),
-                Dog(id = 13, name = "Pan Pumpernikiel", breed = "Jack Russel"),
+                Dog(id = 1, name = "Burek", breed = "Labrador"),
+                Dog(id = 2, name = "Reksio", breed = "Beagle", isFavorite = true),
+                Dog(id = 3, name = "Łatek", breed = "Dalmatyńczyk"),
+                Dog(id = 4, name = "Fafik", breed = "Mops", isFavorite = true),
+                Dog(id = 5, name = "Szarik", breed = "Owczarek Niemiecki"),
+                Dog(id = 6, name = "Czarek", breed = "Golden Retriever"),
+                Dog(id = 7, name = "Tofik", breed = "Border Collie", isFavorite = true),
+                Dog(id = 8, name = "Dyzio", breed = "Husky"),
+                Dog(id = 9, name = "Pimpek", breed = "Cocker Spaniel", isFavorite = true)
             )
         )
     }
 
+
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    var appliedSearchQuery by rememberSaveable { mutableStateOf("") }
     var isError by rememberSaveable { mutableStateOf(false) }
     var buttonsEnabled: Boolean = false;
 
@@ -101,10 +98,6 @@ fun DogListScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                onSearchClick = {
-                    appliedSearchQuery = searchQuery // Apply the search query
-                    Log.d("Search", "Search clicked")
-                },
                 onAddClick = {
                     if (searchQuery.isNotEmpty() && !dogs.any { it.name.equals(searchQuery, ignoreCase = true) }) {
                         val newDog = Dog(id = dogs.size + 1, name = searchQuery, breed = "Jack Russel")
@@ -128,10 +121,10 @@ fun DogListScreen(navController: NavController) {
 
             LazyColumn {
                 // Filter dogs based on applied search query
-                val filteredDogs = if (appliedSearchQuery.isNotEmpty()) {
+                val filteredDogs = if (searchQuery.isNotEmpty()) {
                     dogs.filter { dog ->
-                        dog.name.contains(appliedSearchQuery, ignoreCase = true) ||
-                                dog.breed.contains(appliedSearchQuery, ignoreCase = true)
+                        dog.name.contains(searchQuery, ignoreCase = true) ||
+                                dog.breed.contains(searchQuery, ignoreCase = true)
                     }
                 } else {
                     dogs

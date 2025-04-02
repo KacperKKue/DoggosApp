@@ -25,8 +25,11 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -94,6 +97,17 @@ fun DogItem(
             modifier = Modifier.align(Alignment.CenterVertically)
         ) {
             Icon(
+                modifier = Modifier
+                    .graphicsLayer(alpha = 0.99f)
+                    .drawWithCache {
+                        onDrawWithContent {
+                            drawContent()
+                            val brushGradient = Brush.linearGradient(
+                                colors = listOf(Color(101, 85, 143), Color(238, 184, 224))
+                            )
+                            drawRect(brushGradient, blendMode = BlendMode.SrcAtop)
+                        }
+                    },
                 imageVector = if (dog.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorite",
                 tint = Color(238, 184, 224)
@@ -107,7 +121,7 @@ fun DogItem(
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Delete",
-                tint = Color.Red
+                tint = Color(154, 37, 45)
             )
         }
     }

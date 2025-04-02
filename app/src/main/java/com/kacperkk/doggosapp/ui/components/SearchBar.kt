@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 fun SearchBar(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onSearchClick: () -> Unit,
     onAddClick: () -> Unit,
     placeholderText: String,
     modifier: Modifier = Modifier,
@@ -50,20 +49,6 @@ fun SearchBar(
                 focusedBorderColor = if (isError) Color.Red else Color.Blue
             )
         )
-
-        Spacer(modifier = Modifier.width(4.dp))
-
-        IconButton(
-            onClick = onSearchClick,
-            modifier = Modifier.size(48.dp),
-            enabled = buttonsEnabled
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = Color.Black,
-            )
-        }
 
         Spacer(modifier = Modifier.width(8.dp))
 
