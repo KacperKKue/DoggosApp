@@ -19,9 +19,7 @@ fun SearchBar(
     onSearchQueryChange: (String) -> Unit,
     onAddClick: () -> Unit,
     placeholderText: String,
-    modifier: Modifier = Modifier,
-    buttonsEnabled: Boolean,
-    isError: Boolean
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
@@ -43,11 +41,6 @@ fun SearchBar(
             modifier = Modifier
                 .weight(1f)
                 .height(56.dp),
-            isError = isError,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = if (isError) Color.Red else Color.Gray,
-                focusedBorderColor = if (isError) Color.Red else Color.Blue
-            )
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -55,7 +48,6 @@ fun SearchBar(
         IconButton(
             onClick = onAddClick,
             modifier = Modifier.size(48.dp),
-            enabled = buttonsEnabled
         ) {
             Icon(
                 imageVector = Icons.Default.Add,

@@ -58,7 +58,6 @@ fun DogListScreen(navController: NavController) {
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var isError by rememberSaveable { mutableStateOf(false) }
-    var buttonsEnabled: Boolean = false;
 
     Scaffold(
         topBar = {
@@ -92,7 +91,6 @@ fun DogListScreen(navController: NavController) {
                 searchQuery = searchQuery,
                 onSearchQueryChange = { query ->
                     searchQuery = query
-                    buttonsEnabled = query.isNotEmpty()
                 },
                 placeholderText = "Poszukaj lub dodaj pieska 🐕",
                 modifier = Modifier
@@ -104,15 +102,12 @@ fun DogListScreen(navController: NavController) {
                         dogs = dogs + newDog
                         searchQuery = "" // Czyszczenie pola
                         isError = false
-                        buttonsEnabled = false
                         Log.d("Add", "Dog added: $newDog")
                     } else {
                         isError = true
                         Log.d("Add", "Dog already exists or name is empty")
                     }
-                },
-                buttonsEnabled = buttonsEnabled,
-                isError = isError
+                }
             )
 
             Counter(
