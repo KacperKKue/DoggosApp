@@ -38,7 +38,6 @@ fun DogDetailScreen(
     dogViewModel: DogsViewModel,
     dogId: String
 ) {
-    // Convert dogId to Int and find the dog in the ViewModel's list
     val dogIdInt = dogId.toIntOrNull() ?: -1
     val dog = dogViewModel.dogs.firstOrNull { it.id == dogIdInt }
 
@@ -54,11 +53,10 @@ fun DogDetailScreen(
                     }
                 },
                 actions = {
-                    // Delete button with ViewModel interaction
                     IconButton(onClick = {
                         dog?.let {
                             dogViewModel.deleteDog(it)
-                            navController.popBackStack() // Navigate back after deletion
+                            navController.popBackStack()
                         }
                     }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete")
@@ -68,7 +66,6 @@ fun DogDetailScreen(
         }
     ) { paddingValues ->
         if (dog == null) {
-            // Handle invalid dogId case
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -83,7 +80,6 @@ fun DogDetailScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Display dog details
                 Box(
                     modifier = Modifier
                         .size(200.dp)
@@ -113,12 +109,12 @@ fun DogDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = dog.name, // Use actual dog name
+                        text = dog.name,
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = dog.breed, // Use actual dog breed
+                        text = dog.breed,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )

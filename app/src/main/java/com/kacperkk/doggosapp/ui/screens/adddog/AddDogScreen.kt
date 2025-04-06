@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,12 +22,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,15 +52,15 @@ fun AddDogScreen(
     navController: NavController,
     dogViewModel: DogsViewModel
 ) {
-    var name: String = ""
-    var breed: String = ""
+    var name by remember { mutableStateOf("") }
+    var breed by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Dodaj psa",
+                        text = "Dodaj Psa",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -68,76 +75,78 @@ fun AddDogScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues)
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
                 modifier = Modifier
-                    .size(256.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .width(280.dp)
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp))
                     .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(101, 85, 143), Color(238, 184, 224))
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color.LightGray, Color.Gray),
+                            start = Offset(0f, 0f),
+                            end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
                         )
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🐕", fontSize = 16.sp)
+                Text(
+                    text = "Dodaj zdjęcie",
+                    color = Color.White,
+                    fontSize = 18.sp
+                )
             }
 
             OutlinedTextField(
                 value = name,
-                onValueChange = { },
-                placeholder = {
-                    Text(
-                        text = "Imie",
-                        fontSize = 14.sp
-                    )
-                },
+                onValueChange = { name = it },
+                label = { Text("Imię psa") },
+                modifier = Modifier.width(280.dp),
                 singleLine = true,
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier
-                    .weight(0.6f)
-                    .height(16.dp),
+                textStyle = LocalTextStyle.current.copy(
+                    textAlign = TextAlign.Start
+                )
             )
 
-            // Pole tekstowe - Rasa
             OutlinedTextField(
                 value = breed,
-                onValueChange = { },
-                placeholder = {
-                    Text(
-                        text = "Rasa",
-                        fontSize = 14.sp
-                    )
-                },
+                onValueChange = { breed = it },
+                label = { Text("Rasa psa") },
+                modifier = Modifier.width(280.dp),
                 singleLine = true,
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier
-                    .weight(0.6f)
-                    .height(16.dp),
+                textStyle = LocalTextStyle.current.copy(
+                    textAlign = TextAlign.Start
+                )
             )
 
-            // Przycisk dodania
+            Spacer(modifier = Modifier.height(2.dp))
+
             Button(
                 onClick = {
-                    // Tu możesz wywołać dogViewModel.addDog(...) później
+                    if (name.isNotBlank() && breed.isNotBlank()) {
+                        dogViewModel.addDog(Dog(id = dogViewModel.dogs.size + 1, name = name, breed = breed))
+                        navController.popBackStack()
+                    }
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
+                    .width(280.dp)
+                    .height(50.dp)
                     .background(
-                        Brush.horizontalGradient(
+                        brush = Brush.horizontalGradient(
                             listOf(Color(0xFF5C258D), Color(0xFFD6A4A4))
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                contentPadding = PaddingValues()
+                shape = RoundedCornerShape(8.dp),
+                enabled = name.isNotBlank() && breed.isNotBlank(),
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                Text("Add", color = Color.White)
+                Text("Dodaj psa", fontSize = 16.sp, color = Color.White)
             }
         }
     }
