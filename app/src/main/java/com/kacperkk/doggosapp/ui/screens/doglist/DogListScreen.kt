@@ -35,7 +35,6 @@ import com.kacperkk.doggosapp.ui.components.Counter
 fun DogListScreen(
     navController: NavController,
     dogViewModel: DogsViewModel,
-    onAddDog: (Dog) -> Unit,
     onDeleteDog: (Dog) -> Unit,
     onToggleFavorite: (Dog) -> Unit
 ) {

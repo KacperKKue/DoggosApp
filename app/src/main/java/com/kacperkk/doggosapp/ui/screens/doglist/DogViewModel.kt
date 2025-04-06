@@ -9,15 +9,10 @@ import com.kacperkk.doggosapp.model.Dog
 class DogsViewModel : ViewModel() {
     var dogs by mutableStateOf(
         listOf(
-            Dog(id = 0, name = "Burek", breed = "Labrador"),
-            Dog(id = 1, name = "Reksio", breed = "Beagle", isFavorite = true),
-            Dog(id = 2, name = "Łatek", breed = "Dalmatyńczyk"),
-            Dog(id = 3, name = "Fafik", breed = "Mops", isFavorite = true),
-            Dog(id = 4, name = "Szarik", breed = "Owczarek Niemiecki"),
-            Dog(id = 5, name = "Czarek", breed = "Golden Retriever"),
-            Dog(id = 6, name = "Tofik", breed = "Border Collie", isFavorite = true),
-            Dog(id = 7, name = "Dyzio", breed = "Husky"),
-            Dog(id = 8, name = "Pimpek", breed = "Cocker Spaniel", isFavorite = true)
+            Dog(id = 0, name = "Burek", breed = "Labrador", imageUrl = "https://images.dog.ceo/breeds/boxer/n02108089_2791.jpg"),
+            Dog(id = 1, name = "Reksio", breed = "Beagle", isFavorite = true, imageUrl = "https://images.dog.ceo/breeds/terrier-australian/n02096294_1449.jpg"),
+            Dog(id = 2, name = "Łatek", breed = "Dalmatyńczyk", imageUrl = "https://images.dog.ceo/breeds/hound-english/n02089973_2300.jpg"),
+            Dog(id = 3, name = "Fafik", breed = "Mops", isFavorite = true, imageUrl = "https://images.dog.ceo/breeds/poodle-medium/WhatsApp_Image_2022-08-06_at_4.48.38_PM.jpg"),
         )
     )
         private set

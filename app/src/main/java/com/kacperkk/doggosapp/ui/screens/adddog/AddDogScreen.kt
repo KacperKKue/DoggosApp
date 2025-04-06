@@ -1,6 +1,7 @@
 package com.kacperkk.doggosapp.ui.screens.adddog
 
 import android.R.attr.name
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,11 +42,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.kacperkk.doggosapp.model.Dog
+import com.kacperkk.doggosapp.network.RetrofitInstance
 import com.kacperkk.doggosapp.ui.screens.doglist.DogsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +60,23 @@ fun AddDogScreen(
 ) {
     var name by remember { mutableStateOf("") }
     var breed by remember { mutableStateOf("") }
+
+    var imageUrl by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(true) }
+    var imageError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isLoading = true
+        imageUrl = try {
+            val url = fetchRandomDogImageUrl()
+            imageError = url == "error"
+            url
+        } catch (e: Exception) {
+            imageError = true
+            "error"
+        }
+        isLoading = false
+    }
 
     Scaffold(
         topBar = {
@@ -85,20 +108,28 @@ fun AddDogScreen(
                     .width(280.dp)
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Color.LightGray, Color.Gray),
-                            start = Offset(0f, 0f),
-                            end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                        )
-                    ),
+                    .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "Dodaj zdjęcie",
-                    color = Color.White,
-                    fontSize = 18.sp
-                )
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(color = Color.DarkGray)
+                    }
+                    !imageError && imageUrl.isNotBlank() -> {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = "Zdjęcie psa",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = "🐶",
+                            fontSize = 48.sp
+                        )
+                    }
+                }
             }
 
             OutlinedTextField(
@@ -128,7 +159,14 @@ fun AddDogScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank() && breed.isNotBlank()) {
-                        dogViewModel.addDog(Dog(id = dogViewModel.dogs.size + 1, name = name, breed = breed))
+                        dogViewModel.addDog(
+                            Dog(
+                                id = dogViewModel.dogs.size + 1,
+                                name = name,
+                                breed = breed,
+                                imageUrl = if (!imageError) imageUrl else null
+                            )
+                        )
                         navController.popBackStack()
                     }
                 },
@@ -149,5 +187,15 @@ fun AddDogScreen(
                 Text("Dodaj psa", fontSize = 16.sp, color = Color.White)
             }
         }
+    }
+}
+
+suspend fun fetchRandomDogImageUrl(): String {
+    return try {
+        val response = RetrofitInstance.api.getRandomDogImage()
+        response.message // <-- link do zdjęcia
+    } catch (e: Exception) {
+        Log.e("AddDogScreen", "Błąd pobierania obrazka", e)
+        "error"
     }
 }

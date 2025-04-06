@@ -40,7 +40,6 @@ fun DoggosApplication(dogViewModel: DogsViewModel) {
             DogListScreen(
                 navController = navController,
                 dogViewModel = dogViewModel,
-                onAddDog = { newDog -> dogViewModel.addDog(newDog) },
                 onDeleteDog = { dog -> dogViewModel.deleteDog(dog) },
                 onToggleFavorite = { dog -> dogViewModel.toggleFavorite(dog) }
             )

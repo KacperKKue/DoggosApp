@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,11 +32,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.kacperkk.doggosapp.model.Dog
 
 
@@ -57,18 +60,29 @@ fun DogItem(
             )
     ) {
         // https://foso.github.io/Jetpack-Compose-Playground/foundation/shape/
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(Color(101, 85, 143), Color(238, 184, 224))
-                    )
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "🐕", fontSize = 16.sp)
+        if (dog.imageUrl != null) {
+            AsyncImage(
+                model = dog.imageUrl,
+                contentDescription = "Zdjęcie psa",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(101, 85, 143), Color(238, 184, 224))
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "🐕", fontSize = 16.sp)
+            }
         }
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -125,4 +139,9 @@ fun DogItem(
             )
         }
     }
+}
+
+@Composable
+fun AsyncImage(model: String, contentDescription: String, modifier: Modifier) {
+    TODO("Not yet implemented")
 }
