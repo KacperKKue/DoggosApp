@@ -42,10 +42,9 @@ import com.kacperkk.doggosapp.ui.screens.doglist.DogsViewModel
 fun DogDetailScreen(
     navController: NavController,
     dogViewModel: DogsViewModel,
-    dogId: String
+    dogId: Int
 ) {
-    val dogIdInt = dogId.toIntOrNull() ?: -1
-    val dog = dogViewModel.dogs.firstOrNull { it.id == dogIdInt }
+    val dog = dogViewModel.dogs.firstOrNull { it.id == dogId }
 
     Scaffold(
         topBar = {

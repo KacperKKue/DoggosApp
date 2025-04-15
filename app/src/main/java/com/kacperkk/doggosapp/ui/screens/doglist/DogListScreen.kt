@@ -27,6 +27,10 @@ import com.kacperkk.doggosapp.ui.components.DogItem
 import com.kacperkk.doggosapp.ui.components.SearchBar
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.NavController
+import com.kacperkk.doggosapp.model.AddDogScreen
+import com.kacperkk.doggosapp.model.DogDetailScreen
+import com.kacperkk.doggosapp.model.ProfileScreen
+import com.kacperkk.doggosapp.model.SettingsScreen
 import com.kacperkk.doggosapp.ui.components.Counter
 
 
@@ -48,12 +52,12 @@ fun DogListScreen(
                     Text(text = "Doggos", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate("settings") }) {
+                    IconButton(onClick = { navController.navigate(SettingsScreen) }) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate("profile") }) {
+                    IconButton(onClick = { navController.navigate(ProfileScreen) }) {
                         Icon(Icons.Default.AccountCircle, contentDescription = "Profile")
                     }
                 }
@@ -73,7 +77,7 @@ fun DogListScreen(
                     .fillMaxWidth()
                     .padding(8.dp),
                 onAddClick = {
-                    navController.navigate("new_dog")
+                    navController.navigate(AddDogScreen)
                 }
             )
 
@@ -90,7 +94,7 @@ fun DogListScreen(
                 items(sortedDogs.size) { dog ->
                     DogItem(
                         dog = sortedDogs[dog],
-                        onDogClick = { navController.navigate("dog_detail/${sortedDogs[dog].id}") },
+                        onDogClick = { navController.navigate(DogDetailScreen(dogId = sortedDogs[dog].id)) },
                         onFavoriteClick = { onToggleFavorite(sortedDogs[dog]) },
                         onDeleteClick = { onDeleteDog(sortedDogs[dog]) },
                         navController = navController

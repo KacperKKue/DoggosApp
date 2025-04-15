@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -61,4 +62,17 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // Navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Async Image
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // Retrofit
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.retrofit)
 }

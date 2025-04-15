@@ -9,6 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.kacperkk.doggosapp.model.AddDogScreen
+import com.kacperkk.doggosapp.model.DogDetailScreen
+import com.kacperkk.doggosapp.model.DogListScreen
+import com.kacperkk.doggosapp.model.ProfileScreen
+import com.kacperkk.doggosapp.model.SettingsScreen
 import com.kacperkk.doggosapp.ui.screens.adddog.AddDogScreen
 import com.kacperkk.doggosapp.ui.screens.dogdetail.DogDetailScreen
 import com.kacperkk.doggosapp.ui.screens.doglist.DogListScreen
@@ -35,8 +41,8 @@ class MainActivity : ComponentActivity() {
 fun DoggosApplication(dogViewModel: DogsViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "dog_list") {
-        composable("dog_list") {
+    NavHost(navController = navController, startDestination = DogListScreen) {
+        composable<DogListScreen> {
             DogListScreen(
                 navController = navController,
                 dogViewModel = dogViewModel,
@@ -44,21 +50,25 @@ fun DoggosApplication(dogViewModel: DogsViewModel) {
                 onToggleFavorite = { dog -> dogViewModel.toggleFavorite(dog) }
             )
         }
-        composable("profile") {
+
+        composable<ProfileScreen> {
             ProfileScreen(navController)
         }
-        composable("settings") {
+
+        composable<SettingsScreen> {
             SettingsScreen(navController)
         }
-        composable("new_dog") {
+
+        composable<AddDogScreen> {
             AddDogScreen(navController, dogViewModel)
         }
-        composable("dog_detail/{dogId}") { backStackEntry ->
-            val dogId = backStackEntry.arguments?.getString("dogId") ?: "Unknown"
+
+        composable<DogDetailScreen> {
+            val args = it.toRoute<DogDetailScreen>()
             DogDetailScreen(
                 navController = navController,
                 dogViewModel = dogViewModel,
-                dogId = dogId
+                dogId = args.dogId
             )
         }
     }

@@ -48,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.kacperkk.doggosapp.DoggosApp
+import com.kacperkk.doggosapp.data.AppContainer
+import com.kacperkk.doggosapp.data.DogsPhotosRepository
 import com.kacperkk.doggosapp.model.Dog
 import com.kacperkk.doggosapp.network.RetrofitInstance
 import com.kacperkk.doggosapp.ui.screens.doglist.DogsViewModel
@@ -193,7 +196,7 @@ fun AddDogScreen(
 suspend fun fetchRandomDogImageUrl(): String {
     return try {
         val response = RetrofitInstance.api.getRandomDogImage()
-        response.message // <-- link do zdjęcia
+        response.message
     } catch (e: Exception) {
         Log.e("AddDogScreen", "Błąd pobierania obrazka", e)
         "error"
