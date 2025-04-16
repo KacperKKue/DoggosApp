@@ -1,5 +1,7 @@
 package com.kacperkk.doggosapp.ui.screens.adddog
 
+import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,6 +13,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.kacperkk.doggosapp.data.DogsPhotosRepository
 import com.kacperkk.doggosapp.DoggosApp
+import com.kacperkk.doggosapp.model.Dog
+import com.kacperkk.doggosapp.model.DogImage
 import kotlinx.coroutines.launch
 
 class AddDogViewModel(
@@ -21,7 +25,7 @@ class AddDogViewModel(
         data class Success(
             val name: String = "",
             val breed: String = "",
-            val imageUrl: String
+            val dogImage: DogImage
         ) : UiState
 
         object Error : UiState
@@ -40,28 +44,23 @@ class AddDogViewModel(
             uiState = UiState.Loading
             uiState = try {
                 val currentState = uiState as? UiState.Success
-                val imageUrl = dogsPhotosRepository.getRandomDogImage().message
+                val dogImage: DogImage = dogsPhotosRepository.getRandomDogImage()
+
                 UiState.Success(
                     name = currentState?.name ?: "",
                     breed = currentState?.breed ?: "",
-                    imageUrl = imageUrl
+                    dogImage = dogImage
                 )
+
             } catch (e: Exception) {
+                Log.e("Error", "Msg: " + e.message)
                 UiState.Error
             }
         }
     }
 
-    fun updateName(name: String) {
-        if (uiState is UiState.Success) {
-            uiState = (uiState as UiState.Success).copy(name = name)
-        }
-    }
+    fun addDog(dog: Dog) {
 
-    fun updateBreed(breed: String) {
-        if (uiState is UiState.Success) {
-            uiState = (uiState as UiState.Success).copy(breed = breed)
-        }
     }
 
     companion object {

@@ -4,7 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.kacperkk.doggosapp.DoggosApp
 import com.kacperkk.doggosapp.model.Dog
+import com.kacperkk.doggosapp.ui.screens.adddog.AddDogViewModel
 
 class DogsViewModel : ViewModel() {
     var dogs by mutableStateOf(
