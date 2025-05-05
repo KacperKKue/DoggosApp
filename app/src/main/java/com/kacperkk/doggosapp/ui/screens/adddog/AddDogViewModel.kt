@@ -1,7 +1,6 @@
 package com.kacperkk.doggosapp.ui.screens.adddog
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,8 +10,8 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.kacperkk.doggosapp.data.DogsPhotosRepository
 import com.kacperkk.doggosapp.DoggosApp
+import com.kacperkk.doggosapp.data.DogsPhotosRepository
 import com.kacperkk.doggosapp.model.Dog
 import com.kacperkk.doggosapp.model.DogImage
 import kotlinx.coroutines.launch
@@ -39,19 +38,27 @@ class AddDogViewModel(
         getRandomDogImage()
     }
 
+    fun updateName(newName: String) {
+        val currentState = uiState as? UiState.Success ?: return
+        uiState = currentState.copy(name = newName)
+    }
+
+    fun updateBreed(newBreed: String) {
+        val currentState = uiState as? UiState.Success ?: return
+        uiState = currentState.copy(breed = newBreed)
+    }
+
     fun getRandomDogImage() {
         viewModelScope.launch {
             uiState = UiState.Loading
             uiState = try {
                 val currentState = uiState as? UiState.Success
                 val dogImage: DogImage = dogsPhotosRepository.getRandomDogImage()
-
                 UiState.Success(
                     name = currentState?.name ?: "",
                     breed = currentState?.breed ?: "",
                     dogImage = dogImage
                 )
-
             } catch (e: Exception) {
                 Log.e("Error", "Msg: " + e.message)
                 UiState.Error
@@ -59,8 +66,8 @@ class AddDogViewModel(
         }
     }
 
-    fun addDog(dog: Dog) {
-
+    fun resetForm() {
+        getRandomDogImage()
     }
 
     companion object {

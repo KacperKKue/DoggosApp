@@ -5,14 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.kacperkk.doggosapp.DoggosApp
 import com.kacperkk.doggosapp.model.Dog
-import com.kacperkk.doggosapp.ui.screens.adddog.AddDogViewModel
 
-class DogsViewModel : ViewModel() {
+class DogsViewModel() : ViewModel() {
     var dogs by mutableStateOf(
         listOf(
             Dog(id = 0, name = "Burek", breed = "Labrador", imageUrl = "https://images.dog.ceo/breeds/boxer/n02108089_2791.jpg"),
@@ -34,6 +32,15 @@ class DogsViewModel : ViewModel() {
     fun toggleFavorite(dog: Dog) {
         dogs = dogs.map {
             if (it.id == dog.id) it.copy(isFavorite = !it.isFavorite) else it
+        }
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as DoggosApp)
+                DogsViewModel()
+            }
         }
     }
 }

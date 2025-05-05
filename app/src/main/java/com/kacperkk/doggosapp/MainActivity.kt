@@ -26,31 +26,30 @@ import com.kacperkk.doggosapp.ui.screens.settings.SettingsScreen
 import com.kacperkk.doggosapp.ui.theme.DoggosAppTheme
 
 class MainActivity : ComponentActivity() {
-    private val dogViewModel: DogsViewModel by viewModels()
-    // Zmienić to na factory
-
-    //private val addDogViewModel: AddDogViewModel by viewModels()
+    //private val dogViewModel: DogsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DoggosAppTheme {
-                DoggosApplication(
-                    dogViewModel = dogViewModel
-                )
+                DoggosApplication()
             }
         }
     }
 }
 
 @Composable
-fun DoggosApplication(dogViewModel: DogsViewModel) {
+fun DoggosApplication() {
 
     val navController = rememberNavController()
 
+    val dogViewModel: DogsViewModel =
+        viewModel(factory = DogsViewModel.Factory)
+
     val addDogViewModel: AddDogViewModel =
         viewModel(factory = AddDogViewModel.Factory)
+
 
     NavHost(navController = navController, startDestination = DogListScreen) {
         composable<DogListScreen> {
@@ -71,7 +70,11 @@ fun DoggosApplication(dogViewModel: DogsViewModel) {
         }
 
         composable<AddDogScreen> {
-            AddDogScreen(navController, addDogViewModel.uiState)
+            AddDogScreen(
+                navController,
+                dogViewModel,
+                addDogViewModel
+            )
         }
 
         composable<DogDetailScreen> {
