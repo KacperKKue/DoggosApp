@@ -8,9 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.kacperkk.doggosapp.DoggosApp
+import com.kacperkk.doggosapp.data.DogsPhotosRepository
 import com.kacperkk.doggosapp.model.Dog
 
-class DogsViewModel() : ViewModel() {
+class DogsViewModel(
+    private val dogsPhotosRepository: DogsPhotosRepository
+) : ViewModel() {
     var dogs by mutableStateOf(
         listOf(
             Dog(id = 0, name = "Burek", breed = "Labrador", imageUrl = "https://images.dog.ceo/breeds/boxer/n02108089_2791.jpg"),
@@ -39,7 +42,8 @@ class DogsViewModel() : ViewModel() {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as DoggosApp)
-                DogsViewModel()
+                val dogsPhotosRepository = application.container.dogsPhotosRepository
+                DogsViewModel(dogsPhotosRepository)
             }
         }
     }
