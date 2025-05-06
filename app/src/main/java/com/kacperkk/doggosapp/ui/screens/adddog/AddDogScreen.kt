@@ -1,5 +1,6 @@
 package com.kacperkk.doggosapp.ui.screens.adddog
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -124,7 +125,7 @@ fun AddDogScreen(
                 Button(
                     onClick = {
                         val newDog = Dog(
-                            id = dogViewModel.dogs.size+1,
+                            id = dogViewModel.getCount()+1,
                             name = uiState.name,
                             breed = uiState.breed,
                             imageUrl = uiState.dogImage.message

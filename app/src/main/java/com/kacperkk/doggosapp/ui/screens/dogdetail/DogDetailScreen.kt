@@ -1,5 +1,6 @@
 package com.kacperkk.doggosapp.ui.screens.dogdetail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,9 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.kacperkk.doggosapp.ui.screens.doglist.DogsViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +45,11 @@ fun DogDetailScreen(
     dogViewModel: DogsViewModel,
     dogId: Int
 ) {
-    val dog = dogViewModel.dogs.firstOrNull { it.id == dogId }
+    val uiState by dogViewModel.uiState.collectAsStateWithLifecycle()
+    val dog = when (uiState) {
+        is DogsViewModel.UiState.Success -> (uiState as DogsViewModel.UiState.Success).data.firstOrNull { it.id == dogId }
+        else -> null
+    }
 
     Scaffold(
         topBar = {
@@ -69,72 +75,97 @@ fun DogDetailScreen(
             )
         }
     ) { paddingValues ->
-        if (dog == null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Dog not found!")
+        when (uiState) {
+            is DogsViewModel.UiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Loading...", modifier = Modifier.align(Alignment.Center))
+                }
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                if (dog.imageUrl != null) {
-                    AsyncImage(
-                        model = dog.imageUrl,
-                        contentDescription = "Zdjęcie psa",
-                        modifier = Modifier
-                            .width(280.dp)
-                            .aspectRatio(1f)
-                            .align(Alignment.CenterHorizontally)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
+            is DogsViewModel.UiState.Error -> {
+                val error = (uiState as DogsViewModel.UiState.Error).throwable
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Error: ${error.localizedMessage}", modifier = Modifier.align(Alignment.Center))
+                }
+            }
+            is DogsViewModel.UiState.Success -> {
+                if (dog == null) {
                     Box(
                         modifier = Modifier
-                            .size(200.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(101, 85, 143),
-                                        Color(238, 184, 224)
-                                    ),
-                                    start = Offset(0f, 0f),
-                                    end = Offset.Infinite
-                                )
-                            )
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "🐕",
-                            fontSize = 64.sp,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        Text("Dog not found!")
                     }
-                }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                    ) {
+                        if (dog.imageUrl != null) {
+                            AsyncImage(
+                                model = dog.imageUrl,
+                                contentDescription = "Zdjęcie psa",
+                                modifier = Modifier
+                                    .width(280.dp)
+                                    .aspectRatio(1f)
+                                    .align(Alignment.CenterHorizontally)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            colors = listOf(
+                                                Color(101, 85, 143),
+                                                Color(238, 184, 224)
+                                            ),
+                                            start = Offset(0f, 0f),
+                                            end = Offset.Infinite
+                                        )
+                                    )
+                            ) {
+                                Text(
+                                    text = "🐕",
+                                    fontSize = 64.sp,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = dog.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = dog.breed,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = dog.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = dog.breed,
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }

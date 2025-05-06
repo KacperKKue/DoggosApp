@@ -18,38 +18,42 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.kacperkk.doggosapp.model.Dog
 import com.kacperkk.doggosapp.ui.components.DogItem
 import com.kacperkk.doggosapp.ui.components.SearchBar
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.navigation.NavController
+import com.kacperkk.doggosapp.ui.components.Counter
 import com.kacperkk.doggosapp.model.AddDogScreen
 import com.kacperkk.doggosapp.model.DogDetailScreen
 import com.kacperkk.doggosapp.model.ProfileScreen
 import com.kacperkk.doggosapp.model.SettingsScreen
-import com.kacperkk.doggosapp.ui.components.Counter
-
+import com.kacperkk.doggosapp.ui.screens.doglist.DogsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DogListScreen(
     navController: NavController,
     dogViewModel: DogsViewModel,
-    onDeleteDog: (Dog) -> Unit,
-    onToggleFavorite: (Dog) -> Unit
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    var isError by rememberSaveable { mutableStateOf(false) }
+
+    val uiState by dogViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Doggos", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                    Text(
+                        text = "Doggos",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(SettingsScreen) }) {
@@ -69,6 +73,7 @@ fun DogListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Search Bar
             SearchBar(
                 searchQuery = searchQuery,
                 onSearchQueryChange = { searchQuery = it },
@@ -81,24 +86,44 @@ fun DogListScreen(
                 }
             )
 
-            Counter(dogs = dogViewModel.dogs)
-
-            LazyColumn {
-                val filteredDogs =
-                    if (searchQuery.isNotEmpty()) {
-                        dogViewModel.dogs.filter { it.name.contains(searchQuery, true) || it.breed.contains(searchQuery, true) }
-                    } else dogViewModel.dogs
-
-                val sortedDogs = filteredDogs.sortedByDescending { it.isFavorite }
-
-                items(sortedDogs.size) { dog ->
-                    DogItem(
-                        dog = sortedDogs[dog],
-                        onDogClick = { navController.navigate(DogDetailScreen(dogId = sortedDogs[dog].id)) },
-                        onFavoriteClick = { onToggleFavorite(sortedDogs[dog]) },
-                        onDeleteClick = { onDeleteDog(sortedDogs[dog]) },
-                        navController = navController
+            when (uiState) {
+                is DogsViewModel.UiState.Loading -> {
+                    Text("Loading...", modifier = Modifier.padding(16.dp))
+                }
+                is DogsViewModel.UiState.Error -> {
+                    val error = (uiState as DogsViewModel.UiState.Error).throwable
+                    Text(
+                        text = "Error: ${error.localizedMessage}",
+                        modifier = Modifier.padding(16.dp)
                     )
+                }
+                is DogsViewModel.UiState.Success -> {
+                    val dogs = (uiState as DogsViewModel.UiState.Success).data
+
+                    Counter(dogs = dogs)
+
+                    val filteredDogs = if (searchQuery.isNotEmpty()) {
+                        dogs.filter {
+                            it.name.contains(searchQuery, ignoreCase = true) ||
+                                    it.breed.contains(searchQuery, ignoreCase = true)
+                        }
+                    } else dogs
+
+                    val sortedDogs = filteredDogs.sortedByDescending { it.isFavorite }
+
+                    LazyColumn {
+                        items(sortedDogs.size) { index ->
+                            val dog = sortedDogs[index]
+                            Log.d("DogListScreen", "Dog: $dog")
+                            DogItem(
+                                dog = dog,
+                                onDogClick = { navController.navigate(DogDetailScreen(dogId = dog.id)) },
+                                onFavoriteClick = { dogViewModel.toggleFavorite(dog) },
+                                onDeleteClick = { dogViewModel.deleteDog(dog) },
+                                navController = navController
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.kacperkk.doggosapp.ui.screens.doglist
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,15 +22,6 @@ import kotlinx.coroutines.launch
 class DogsViewModel(
     private val dogsPhotosRepository: DogsPhotosRepository
 ) : ViewModel() {
-    var dogs by mutableStateOf(
-        listOf(
-            Dog(id = 0, name = "Burek", breed = "Labrador", imageUrl = "https://images.dog.ceo/breeds/boxer/n02108089_2791.jpg"),
-            Dog(id = 1, name = "Reksio", breed = "Beagle", isFavorite = true, imageUrl = "https://images.dog.ceo/breeds/terrier-australian/n02096294_1449.jpg"),
-            Dog(id = 2, name = "Łatek", breed = "Dalmatyńczyk", imageUrl = "https://images.dog.ceo/breeds/hound-english/n02089973_2300.jpg"),
-            Dog(id = 3, name = "Fafik", breed = "Mops", isFavorite = true, imageUrl = "https://images.dog.ceo/breeds/poodle-medium/WhatsApp_Image_2022-08-06_at_4.48.38_PM.jpg"),
-        )
-    )
-        private set
 
     sealed interface UiState {
         object Loading: UiState
@@ -43,17 +35,26 @@ class DogsViewModel(
         .catch { emit(UiState.Error(it)) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState.Loading)
 
-    fun addDog(newDog: Dog) {
-        dogs = dogs + newDog
+    fun getCount(): Int = when (val state = uiState.value) {
+        is UiState.Success -> state.data.size
+        else -> 0
+    }
+
+    fun addDog(dog: Dog) {
+        viewModelScope.launch {
+            dogsPhotosRepository.add(dog)
+        }
     }
 
     fun deleteDog(dog: Dog) {
-        dogs = dogs.filter { it.id != dog.id }
+        viewModelScope.launch {
+            dogsPhotosRepository.remove(dog.id)
+        }
     }
 
     fun toggleFavorite(dog: Dog) {
-        dogs = dogs.map {
-            if (it.id == dog.id) it.copy(isFavorite = !it.isFavorite) else it
+        viewModelScope.launch {
+            dogsPhotosRepository.triggerFav(dog.id)
         }
     }
 

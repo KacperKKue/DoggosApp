@@ -55,9 +55,7 @@ fun DoggosApplication() {
         composable<DogListScreen> {
             DogListScreen(
                 navController = navController,
-                dogViewModel = dogViewModel,
-                onDeleteDog = { dog -> dogViewModel.deleteDog(dog) },
-                onToggleFavorite = { dog -> dogViewModel.toggleFavorite(dog) }
+                dogViewModel = dogViewModel
             )
         }
 
