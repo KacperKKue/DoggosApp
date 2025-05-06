@@ -12,11 +12,7 @@ interface DogsPhotosRepository {
     val dogs: Flow<List<Dog>>
 
     suspend fun getRandomDogImage(): DogImage
-    suspend fun add(
-        name: String,
-        breed: String,
-        imageUrl: String
-    )
+    suspend fun add(dog: Dog)
     suspend fun remove(id: Int)
     suspend fun triggerFav(id: Int)
 }
@@ -39,8 +35,8 @@ class NetworkDogsPhotosRepository(
 
     override suspend fun getRandomDogImage(): DogImage = dogsService.getRandomDogImage()
 
-    override suspend fun add(name: String, breed: String, imageUrl: String) {
-        dogDao.insertDog(DogEntity(name = name, breed = breed, imageUrl = imageUrl, isFavorite = false))
+    override suspend fun add(dog: Dog) {
+        dogDao.insertDog(DogEntity(name = dog.name, breed = dog.breed, imageUrl = dog.imageUrl, isFavorite = false))
     }
 
     override suspend fun remove(id: Int) {

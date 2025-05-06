@@ -5,11 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.kacperkk.doggosapp.DoggosApp
 import com.kacperkk.doggosapp.data.DogsPhotosRepository
 import com.kacperkk.doggosapp.model.Dog
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class DogsViewModel(
     private val dogsPhotosRepository: DogsPhotosRepository
@@ -23,6 +30,18 @@ class DogsViewModel(
         )
     )
         private set
+
+    sealed interface UiState {
+        object Loading: UiState
+        data class Error(val throwable: Throwable): UiState
+        data class Success(val data: List<Dog>): UiState
+    }
+
+    val uiState: StateFlow<UiState> = dogsPhotosRepository
+        .dogs
+        .map<List<Dog>, UiState> { UiState.Success(data = it) }
+        .catch { emit(UiState.Error(it)) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState.Loading)
 
     fun addDog(newDog: Dog) {
         dogs = dogs + newDog

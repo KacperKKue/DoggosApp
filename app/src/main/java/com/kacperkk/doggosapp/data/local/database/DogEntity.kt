@@ -15,7 +15,7 @@ data class DogEntity(
     val breed: String,
 
     @ColumnInfo(name = "image_url")
-    val imageUrl: String,
+    val imageUrl: String? = null,
 
     @ColumnInfo(name = "is_favorite", defaultValue = "0")
     val isFavorite: Boolean = false
